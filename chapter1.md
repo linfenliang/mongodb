@@ -1,3 +1,38 @@
-# First Chapter
+# 为什么需要MongoDB
 
-GitBook allows you to organize your book into chapters, each chapter is stored in a separate file like this one.
+## MongoDB与MySQL的区别
+
+关于MongoDB与MySQL的区别可以参考网上关于NoSQL与MySQL的区别，以下是找到的网上的关于两者区别的截图：
+
+![](/assets/import.png)![](/assets/import2.png)![](/assets/import3.png)![](/assets/import4.png)
+
+总体上讲：
+
+由于MongoDB独特的数据处理方式，可以将热点数据加载到内存，故而对查询来讲，会非常快（当然也会非常消耗内存）；同时由于采用了BSON的方式存储数据，故而对JSON格式数据具有非常好的支持性以及友好的表结构修改性，文档式的存储方式，数据友好可见；数据库的分片集群负载具有非常好的扩展性以及非常不错的自动故障转移（大赞）。
+
+不足：数据库的查询采用了特有的查询方式，有一定的学习成本（不高）；索引不咋滴；锁只能提供到collection级别，还做不到行级锁；没有事务机制（不能回滚啊）；学习资料肯定没有MySQL的多。
+
+## MongoDB与Hadoop的区别
+
+MongoDB侧重于对数据进行操作的应用系统，而Hadoop则侧重于对数据进行分析统计的应用。  
+MongoDB能够满足对数据库读写性能具有极高要求的应用场景（很消耗memory的），一般这些应用的响应延迟会要求控制在10ms以下，甚至更低。而Hadoop由于每一次的读写操作会包含大量数据（Hadoop更适合少次操作大批量数据的场景），通过聚集分析处理大量数据，这种分析一般都会走MapReduce，会造成很高的延迟（数分钟到数小时不等）
+
+## 不适合MongoDB的场景
+
+如果业务中存在大量复杂的事务逻辑操作，则不要用MongoDB数据库
+
+## MongoDB能为我解决哪些问题
+
+一般来讲，我会将MySQL中的部分表迁移到MongoDB中，主要是涉及到车辆历史轨迹以及温湿度数据等机器采集到的数据，而订单数据、客户数据等信息，仍然放到MySQL数据库中，主要是因为这两类数据实时采集，实时更新，会随着时间的推移，项目的扩大（PAAS服务），造成非常巨大的数据量，而一般MySQL在单表数据量超过500万后，性能就会下降的比较快，虽然可以通过分表的方式进行处理，但是随着时间的增长，仍然会给我带来比较大的麻烦（如查询等），这样，就不如将其放到MongoDB中存储，查询什么的都会比较方便，不过需要注意根据片键分片哦。
+
+## 在开发过程中遇到问题如何求助
+
+常见的问题一般都可以在网上找到答案。  
+可以百度搜索如[https://segmentfault.com/t/mongodb，github之类的网站查找对应的问题](https://segmentfault.com/t/mongodb，github之类的网站查找对应的问题)
+
+> ## 参考链接
+>
+> [http://www.cnblogs.com/eternal1025/p/5419905.html](http://www.cnblogs.com/eternal1025/p/5419905.html)
+
+
+
