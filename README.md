@@ -1,3 +1,4 @@
-# My Awesome Book
+# MongoDB学习总结
 
-This file file serves as your book's preface, a great place to describe your book's content and ideas.
+经过半个月的学习，将《大数据存储MongoDB实战指南》看完了，本文主要是对该书的实战演练做的笔记，主要以记录个人在演练过程中遇到的问题以及重要的知识点的总结为主，同时会记录遇到的各种问题。
+
