@@ -28,11 +28,11 @@ db.customers.ensureIndex({name:1},{unique:false} )
 ```
 > db.customers.find({name:'zhangsan'}).explain()
 {
-	"cursor" : "BtreeCursor name_1",
-	"isMultiKey" : false,
-	"n" : 10,
-	"nscannedObjects" : 10,
-	"nscanned" : 10,
+	"cursor" : "BtreeCursor name_1",//表示该查询用到了索引
+	"isMultiKey" : false,//未使用多键复合索引
+	"n" : 10,//查询选择匹配到的记录数量
+	"nscannedObjects" : 10,//执行查询扫描到的文档对象数量
+	"nscanned" : 10,//扫描到的文档或索引总数
 	"nscannedObjectsAllPlans" : 10,
 	"nscannedAllPlans" : 10,
 	"scanAndOrder" : false,
