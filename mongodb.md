@@ -95,5 +95,17 @@ db.customers.find({age:{$in:[15,18]}})
 | $slice | 返回数组的一个子集，即对以某属性为基础，返回多少条（范围）。也可以接受偏移值和要返回的元素数量，来返回中间的结果 |
 | $where | 可执行任务JavaScript作为查询的一部分，可为function也可为字符串，查询较慢 |
 
+如：
+
+```
+db.customers.find({'orders.products.product_name':'iphone'},{_id:0,id:1,'orders.products.product_name':1,'orders.products':{'$slice':-1}})
+```
+
+查询结果为：
+
+```
+{ "id" : 11, "orders" : [  {  "products" : [  {  "product_name" : "iphone" } ] } ] }
+```
+
 
 
