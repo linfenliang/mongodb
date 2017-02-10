@@ -5,4 +5,5 @@
 * [MongoDB的查询选择器](chapter2.md)
 * [MongoDB的索引与查询优化](chapter3.md)
 * [MongoDB的增删改查操作](chapter4.md)
+* [Journaling日志功能](chapter5.md)
 
