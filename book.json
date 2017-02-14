@@ -6,10 +6,10 @@
     ],
     "pluginsConfig": {
         "donate": {
-            "title": "",
-            "button": "赞",
+            "title": "支持我继续坚持下去",
+            "button": "攒",
             "wechat": "http://img.blog.csdn.net/20170214161342128?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGluZmVubGlhbmc=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast",
-            "alipay": "",
+            "alipay": "http://img.blog.csdn.net/20170214163124698?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGluZmVubGlhbmc=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast",
             "wechatText": "微信打赏",
             "alipayText": "支付宝打赏"
         }
