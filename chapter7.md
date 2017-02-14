@@ -24,6 +24,194 @@ secondary节点备份primary节点上的数据，secondary节点可以有多个�
 
 ![https://docs.mongodb.com/manual/replication/#edge-cases-2-primaries](https://docs.mongodb.com/manual/_images/replica-set-trigger-election.png)
 
+复制集的创建：
+
+在D:\MongoDB\Server\3.2\bin文件夹中运行CMD命令，启动mongod三个进程，
+分别是：
+
+
+```
+mongod --dbpath=D:\MongoDB\Server\3.2\data\rs0_0 --logpath=D:\MongoDB\Server\3.2\logs\rs0_0.log --port=40000 --replSet=rs0
+mongod --dbpath=D:\MongoDB\Server\3.2\data\rs0_1 --logpath=D:\MongoDB\Server\3.2\logs\rs0_1.log --port=40000 --replSet=rs0
+mongod --dbpath=D:\MongoDB\Server\3.2\data\rs0_2 --logpath=D:\MongoDB\Server\3.2\logs\rs0_2.log --port=40000 --replSet=rs0
+```
+
+
+
+注意：需要创建data文件夹下的子文件夹为rs0_0,rs0_1,rs0_2
+
+然后执行启动一个客户端，mongo，执行：
+
+
+
+```
+mongo --port 40000
+```
+执行初始化复制集命令：
+
+
+```
+> rs.initiate()
+```
+显示结果如下：
+
+
+
+```
+{
+        "info2" : "no configuration specified. Using a default configuration for
+ the set",
+        "me" : "linfl-PC:40000",
+        "ok" : 1
+}
+```
+
+
+查看下：
+
+
+```
+rs0:OTHER> rs.conf()
+```
+
+
+
+
+```
+{
+        "_id" : "rs0",
+        "version" : 1,
+        "protocolVersion" : NumberLong(1),
+        "members" : [
+                {
+                        "_id" : 0,
+                        "host" : "linfl-PC:40000",
+                        "arbiterOnly" : false,
+                        "buildIndexes" : true,
+                        "hidden" : false,
+                        "priority" : 1,
+                        "tags" : {
+
+                        },
+                        "slaveDelay" : NumberLong(0),
+                        "votes" : 1
+                }
+        ],
+        "settings" : {
+                "chainingAllowed" : true,
+                "heartbeatIntervalMillis" : 2000,
+                "heartbeatTimeoutSecs" : 10,
+                "electionTimeoutMillis" : 10000,
+                "getLastErrorModes" : {
+
+                },
+                "getLastErrorDefaults" : {
+                        "w" : 1,
+                        "wtimeout" : 0
+                },
+                "replicaSetId" : ObjectId("58a2e2f5c2e580f7b1c85b18")
+        }
+}
+```
+
+将两个节点加入进来：
+
+
+
+```
+rs0:PRIMARY> rs.add("linfl-PC:40001")
+{ "ok" : 1 }
+rs0:PRIMARY> rs.add("linfl-PC:40002")
+{ "ok" : 1 }
+```
+
+
+
+
+注意：此时命令行的前缀已经变了：rs0:PRIMARY
+
+观察复制集的状态信息：
+
+
+```
+rs0:PRIMARY> rs.status()
+```
+发现有如下输出：
+
+
+
+
+```
+{
+        "set" : "rs0",
+        "date" : ISODate("2017-02-14T11:00:36.634Z"),
+        "myState" : 1,
+        "term" : NumberLong(1),
+        "heartbeatIntervalMillis" : NumberLong(2000),
+        "members" : [
+                {
+                        "_id" : 0,
+                        "name" : "linfl-PC:40000",
+                        "health" : 1,
+                        "state" : 1,
+                        "stateStr" : "PRIMARY",
+                        "uptime" : 216,
+                        "optime" : {
+                                "ts" : Timestamp(1487070006, 1),
+                                "t" : NumberLong(1)
+                        },
+                        "optimeDate" : ISODate("2017-02-14T11:00:06Z"),
+                        "infoMessage" : "could not find member to sync from",
+                        "electionTime" : Timestamp(1487069941, 2),
+                        "electionDate" : ISODate("2017-02-14T10:59:01Z"),
+                        "configVersion" : 3,
+                        "self" : true
+                },
+                {
+                        "_id" : 1,
+                        "name" : "linfl-PC:40001",
+                        "health" : 1,
+                        "state" : 2,
+                        "stateStr" : "SECONDARY",
+                        "uptime" : 40,
+                        "optime" : {
+                                "ts" : Timestamp(1487070006, 1),
+                                "t" : NumberLong(1)
+                        },
+                        "optimeDate" : ISODate("2017-02-14T11:00:06Z"),
+                        "lastHeartbeat" : ISODate("2017-02-14T11:00:36.075Z"),
+                        "lastHeartbeatRecv" : ISODate("2017-02-14T11:00:35.082Z"
+),
+                        "pingMs" : NumberLong(0),
+                        "syncingTo" : "linfl-PC:40000",
+                        "configVersion" : 3
+                },
+                {
+                        "_id" : 2,
+                        "name" : "linfl-PC:40002",
+                        "health" : 1,
+                        "state" : 2,
+                        "stateStr" : "SECONDARY",
+                        "uptime" : 28,
+                        "optime" : {
+                                "ts" : Timestamp(1487070006, 1),
+                                "t" : NumberLong(1)
+                        },
+                        "optimeDate" : ISODate("2017-02-14T11:00:06Z"),
+                        "lastHeartbeat" : ISODate("2017-02-14T11:00:36.071Z"),
+                        "lastHeartbeatRecv" : ISODate("2017-02-14T11:00:32.146Z"
+),
+                        "pingMs" : NumberLong(0),
+                        "configVersion" : 3
+                }
+        ],
+        "ok" : 1
+}
+```
+
+
+
+
 ### 数据同步
 
 ### 故障转移
