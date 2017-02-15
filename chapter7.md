@@ -233,9 +233,69 @@ startup_log
 system.replset
 ```
 注意：MongoDB就是通过oplog.rs来实现复制集间数据同步的。
+我们通过往cms数据库中插入一条记录查看oplog.rs的变化：
 
 
 
+```
+rs0:PRIMARY> use cms
+switched to db cms
+rs0:PRIMARY> db.customers.insert({id:11,name:'lisi',orders:[{orders_id:1,create_time:'2017-02-06',products:[{product_name:'MiPad',price:'$100.00'},{product_name:'iphone',price:'$399.00'}]}],mobile:'13161020110',address:{city:'beijing',street:'taiyanggong'}})
+WriteResult({ "nInserted" : 1 })
+rs0:PRIMARY> db.customers.find()
+{ "_id" : ObjectId("58a3bb2ca0bd576baa4763de"), "id" : 11, "name" : "lisi", "orders" : [ { "orders_id" : 1, "create_time" : "2017-02-06", "products" : [ { "product_name" : "MiPad", "price" : "$100.00" }, { "product_name" : "iphone", "price" : "$399.00" } ] } ], "mobile" : "13161020110", "address" : { "city" :"beijing", "street" : "taiyanggong" } }
+rs0:PRIMARY> use local
+switched to db local
+rs0:PRIMARY> db.oplog.rs.find()
+{ "ts" : Timestamp(1487069941, 1), "h" : NumberLong("-6355743292210446009"), "v" : 2, "op" : "n", "ns" : "", "o" : { "msg" : "initiating set" } }
+{ "ts" : Timestamp(1487069942, 1), "t" : NumberLong(1), "h" : NumberLong("-1263029456710822127"), "v" : 2, "op" : "n", "ns" : "", "o" : { "msg" : "new primary"} }
+{ "ts" : Timestamp(1487069995, 1), "t" : NumberLong(1), "h" : NumberLong("6502719191955655967"), "v" : 2, "op" : "n", "ns" : "", "o" : { "msg" : "Reconfig set","version" : 2 } }
+{ "ts" : Timestamp(1487070006, 1), "t" : NumberLong(1), "h" : NumberLong("-2415405716599170931"), "v" : 2, "op" : "n", "ns" : "", "o" : { "msg" : "Reconfig set", "version" : 3 } }
+{ "ts" : Timestamp(1487124022, 1), "t" : NumberLong(1), "h" : NumberLong("-478589502849657245"), "v" : 2, "op" : "n", "ns" : "", "o" : { "msg" : "Reconfig set", "version" : 4 } }
+{ "ts" : Timestamp(1487124063, 1), "t" : NumberLong(1), "h" : NumberLong("653734030548343548"), "v" : 2, "op" : "n", "ns" : "", "o" : { "msg" : "Reconfig set","version" : 5 } }
+{ "ts" : Timestamp(1487125292, 1), "t" : NumberLong(1), "h" : NumberLong("4089071333042150540"), "v" : 2, "op" : "c", "ns" : "cms.$cmd", "o" : { "create" :"customers" } }
+{ "ts" : Timestamp(1487125292, 2), "t" : NumberLong(1), "h" : NumberLong("-682469243777763072"), "v" : 2, "op" : "i", "ns" : "cms.customers", "o" : { "_id" : ObjectId("58a3bb2ca0bd576baa4763de"), "id" : 11, "name" : "lisi", "orders" : [ { "orders_id" : 1, "create_time" : "2017-02-06", "products" : [ { "product_name" :"MiPad", "price" : "$100.00" }, { "product_name" : "iphone", "price" : "$399.00" } ] } ], "mobile" : "13161020110", "address" : { "city" : "beijing", "street" : "taiyanggong" } } }
+rs0:PRIMARY>
+```
+
+发现oplog.rs已经有了一条我们刚刚创建的记录
+
+
+
+```
+{ "ts" : Timestamp(1487125292, 2), "t" : NumberLong(1), "h" : NumberLong("-682469243777763072"), "v" : 2, "op" : "i", "ns" : "cms.customers", "o" : { "_id" : ObjectId("58a3bb2ca0bd576baa4763de"), "id" : 11, "name" : "lisi", "orders" : [ { "orders_id" : 1, "create_time" : "2017-02-06", "products" : [ { "product_name" :"MiPad", "price" : "$100.00" }, { "product_name" : "iphone", "price" : "$399.00" } ] } ], "mobile" : "13161020110", "address" : { "city" : "beijing", "street" : "taiyanggong" } } }
+```
+
+其中op参数表示操作码：i表示insert操作；ns表示操作发生的命名空间，o为操作包含的对象。
+
+当primary节点完成插入操作后，secondary节点为了保证数据的同步，也会完成一些动作，所有的secondary节点将检查自己的local数据库上oplog.rs是否有修改，找出最近一条记录的时间戳，然后secondary节点将此时间戳作为条件查询primary节点上的oplog.rs集合，并找出所有大雨此时间戳的记录，最后secondary节点将这些找到的记录差润到自己的oplog.rs集合，同时执行这些记录代表的操作，然后完成数据同步。
+
+查看此时的secondary节点数据库信息：
+
+
+
+```
+D:\MongoDB\Server\3.2\bin>mongo --port 40001
+2017-02-15T10:39:36.688+0800 I CONTROL  [main] Hotfix KB2731284 or later update is not installed, will zero
+MongoDB shell version: 3.2.9
+connecting to: 127.0.0.1:40001/test
+rs0:SECONDARY> show dbs
+2017-02-15T10:40:07.204+0800 E QUERY    [thread1] Error: listDatabases failed:{ "ok" : 0, "errmsg" : "not master and slaveOk=false", "code" : 13435 } :
+_getErrorWithCode@src/mongo/shell/utils.js:25:13
+Mongo.prototype.getDBs@src/mongo/shell/mongo.js:62:1
+shellHelper.show@src/mongo/shell/utils.js:761:19
+shellHelper@src/mongo/shell/utils.js:651:15
+@(shellhelp2):1:1
+
+rs0:SECONDARY> rs.slaveOk()//注意：正常情况下secondary不允许读写，这里做更改
+rs0:SECONDARY> show dbs
+cms    0.000GB
+local  0.000GB
+```
+
+![](/assets/mongdb_repl.png)
+
+还要注意：oplog.rs的大小是固定的。32位系统默认大小50MB，64位系统默认为空闲磁盘空间大小的5%，可以通过--oplogSize在启动时设置。
 
 ### 故障转移
 
