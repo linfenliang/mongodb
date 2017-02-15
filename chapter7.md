@@ -121,7 +121,7 @@ rs0:OTHER> rs.conf()
 ```
 rs0:PRIMARY> rs.add("linfl-PC:40001")
 { "ok" : 1 }
-rs0:PRIMARY> rs.add("linfl-PC:40002")
+rs0:PRIMARY> rs.addArb("linfl-PC:40002")
 { "ok" : 1 }
 ```
 
@@ -143,19 +143,19 @@ rs0:PRIMARY> rs.status()
 
 ```
 {
-        "set" : "rs0",
+        "set" : "rs0",//复制集名称
         "date" : ISODate("2017-02-14T11:00:36.634Z"),
-        "myState" : 1,
+        "myState" : 1,//1：primary；2：secondary；
         "term" : NumberLong(1),
         "heartbeatIntervalMillis" : NumberLong(2000),
         "members" : [
                 {
                         "_id" : 0,
                         "name" : "linfl-PC:40000",
-                        "health" : 1,
+                        "health" : 1,//1：运行；0：失败
                         "state" : 1,
                         "stateStr" : "PRIMARY",
-                        "uptime" : 216,
+                        "uptime" : 216,//成员在线时长（秒）
                         "optime" : {
                                 "ts" : Timestamp(1487070006, 1),
                                 "t" : NumberLong(1)
@@ -182,37 +182,36 @@ rs0:PRIMARY> rs.status()
                         "lastHeartbeat" : ISODate("2017-02-14T11:00:36.075Z"),
                         "lastHeartbeatRecv" : ISODate("2017-02-14T11:00:35.082Z"
 ),
-                        "pingMs" : NumberLong(0),
-                        "syncingTo" : "linfl-PC:40000",
+                        "pingMs" : NumberLong(0),//从远端成员到本实例间个路由包的来回时间
+                        "syncingTo" : "linfl-PC:40000",//数据同步实例来源
                         "configVersion" : 3
                 },
-                {
+                               {
                         "_id" : 2,
                         "name" : "linfl-PC:40002",
                         "health" : 1,
-                        "state" : 2,
-                        "stateStr" : "SECONDARY",
-                        "uptime" : 28,
-                        "optime" : {
-                                "ts" : Timestamp(1487070006, 1),
-                                "t" : NumberLong(1)
-                        },
-                        "optimeDate" : ISODate("2017-02-14T11:00:06Z"),
-                        "lastHeartbeat" : ISODate("2017-02-14T11:00:36.071Z"),
-                        "lastHeartbeatRecv" : ISODate("2017-02-14T11:00:32.146Z"
+                        "state" : 7,
+                        "stateStr" : "ARBITER",
+                        "uptime" : 5,
+                        "lastHeartbeat" : ISODate("2017-02-15T02:01:11.170Z"),
+                        "lastHeartbeatRecv" : ISODate("2017-02-15T02:01:10.172Z"
 ),
                         "pingMs" : NumberLong(0),
-                        "configVersion" : 3
+                        "syncingTo" : "linfl-PC:40001",
+                        "configVersion" : 5
                 }
         ],
         "ok" : 1
 }
 ```
 
-
+由于arbiter实例不同步数据，只是在主节点发生故障时在复制集剩下的secondary节点中选取一个新的primary，只是做仲裁，故而运行arbiter实例的机器不需要太多存储空间
 
 
 ### 数据同步
+
+现在通过命令展示数据同步过程，并对数据同步过程做讲解。
+
 
 ### 故障转移
 
