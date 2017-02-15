@@ -232,7 +232,7 @@ replset.election
 startup_log
 system.replset
 ```
-
+注意：MongoDB就是通过oplog.rs来实现复制集间数据同步的。
 
 
 

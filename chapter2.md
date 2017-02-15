@@ -19,7 +19,7 @@ select column from table join table2 where condition
 为了更好的说明，现在MongoDB中插入了一条记录：
 
 ```
-db.customers.insert({id:11,name:'lisi',orders:[{orders_id:1,create_time:'2017-02-06',products:[{product_name:'MiPad',pric10',address:{city:'beijing',street:'taiyanggong'}})
+db.customers.insert({id:11,name:'lisi',orders:[{orders_id:1,create_time:'2017-02-06',products:[{product_name:'MiPad',price:'$100',address:{city:'beijing',street:'taiyanggong'}})
 ```
 
 查询语句：
