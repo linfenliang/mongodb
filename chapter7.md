@@ -211,6 +211,30 @@ rs0:PRIMARY> rs.status()
 ### 数据同步
 
 现在通过命令展示数据同步过程，并对数据同步过程做讲解。
+首先我们先查看下该复制集中的所有数据库：
+
+
+```
+rs0:PRIMARY> show dbs
+local  0.000GB
+```
+只有一个local库，查看下local库中的集合：
+
+
+
+```
+rs0:PRIMARY> use local
+switched to db local
+rs0:PRIMARY> show collections
+me
+oplog.rs
+replset.election
+startup_log
+system.replset
+```
+
+
+
 
 
 ### 故障转移
