@@ -283,7 +283,7 @@ secondary节点down：
 
 ## 参考
 
-> [https://docs.mongodb.com/manual/replication/\\#edge-cases-2-primaries](https://docs.mongodb.com/manual/replication/\#edge-cases-2-primaries)
+> https://docs.mongodb.com/manual/replication/
 
 
 
