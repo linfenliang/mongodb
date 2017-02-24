@@ -22,7 +22,7 @@ secondary节点备份primary节点上的数据，secondary节点可以有多个�
 
 故障转移流程如下所示：
 
-![https://docs.mongodb.com/manual/replication/#edge-cases-2-primaries](https://docs.mongodb.com/manual/_images/replica-set-trigger-election.png)
+![https://docs.mongodb.com/manual/replication/#edge-cases-2-primaries](https://docs.mongodb.com/manual/_images/replica-set-trigger-election.bakedsvg.svg)
 
 复制集的创建：
 
