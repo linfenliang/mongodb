@@ -8,7 +8,7 @@
 在生产环境中，一个复制集应该最少包含三个节点，一个仲裁节点（arbiter），唯一一个数据主节点（primary），一个或多个数据次节点（secondary）。  
 主节点用来接收所有的写操作，一个复制集有且仅有一个primary能够进行写关注（写关注将在后面介绍），主节点在他的操作日志oplog中将所有的修改记录到数据集data sets中。典型的结构如下所示：
 
-![](https://docs.mongodb.com/manual/_images/replica-set-read-write-operations-primary.png)
+![](https://docs.mongodb.com/manual/_images/replica-set-read-write-operations-primary.bakedsvg.svg)
 
 secondary节点备份primary节点上的数据，secondary节点可以有多个，一旦primary节点不可用，abiter将从secondary节点中选取一个作为primary节点，secondary节点的作用如下：
 
