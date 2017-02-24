@@ -493,6 +493,152 @@ rs0:PRIMARY> rs.status()
 
 可以看到primary与secondary节点 optime 中t已经相同了（注意：由于误操作，刚才插入了两条记录）。
 
+现在我们来实验primary节点失效，将primary节点关掉，查看复制集状态，
+
+
+```
+D:\MongoDB\Server\3.2\bin>mongo --port 40001
+2017-02-24T15:57:09.654+0800 I CONTROL  [main] Hotfix KB2731284 or later update
+is not installed, will zero-out data files
+MongoDB shell version: 3.2.9
+connecting to: 127.0.0.1:40001/test
+rs0:PRIMARY> rs.status()
+{
+        "set" : "rs0",
+        "date" : ISODate("2017-02-24T07:57:12.710Z"),
+        "myState" : 1,
+        "term" : NumberLong(3),
+        "heartbeatIntervalMillis" : NumberLong(2000),
+        "members" : [
+                {
+                        "_id" : 0,
+                        "name" : "linfl-PC:40000",
+                        "health" : 0,
+                        "state" : 8,
+                        "stateStr" : "(not reachable/healthy)",
+                        "uptime" : 0,
+                        "optime" : {
+                                "ts" : Timestamp(0, 0),
+                                "t" : NumberLong(-1)
+                        },
+                        "optimeDate" : ISODate("1970-01-01T00:00:00Z"),
+                        "lastHeartbeat" : ISODate("2017-02-24T07:57:12.562Z"),
+                        "lastHeartbeatRecv" : ISODate("2017-02-24T07:56:51.767Z"
+),
+                        "pingMs" : NumberLong(0),
+                        "lastHeartbeatMessage" : "no response within election ti
+meout period",
+                        "configVersion" : -1
+                },
+                {
+                        "_id" : 1,
+                        "name" : "linfl-PC:40001",
+                        "health" : 1,
+                        "state" : 1,
+                        "stateStr" : "PRIMARY",
+                        "uptime" : 448,
+                        "optime" : {
+                                "ts" : Timestamp(1487923023, 1),
+                                "t" : NumberLong(3)
+                        },
+                        "optimeDate" : ISODate("2017-02-24T07:57:03Z"),
+                        "infoMessage" : "could not find member to sync from",
+                        "electionTime" : Timestamp(1487923022, 1),
+                        "electionDate" : ISODate("2017-02-24T07:57:02Z"),
+                        "configVersion" : 5,
+                        "self" : true
+                },
+                {
+                        "_id" : 2,
+                        "name" : "linfl-PC:40002",
+                        "health" : 1,
+                        "state" : 7,
+                        "stateStr" : "ARBITER",
+                        "uptime" : 445,
+                        "lastHeartbeat" : ISODate("2017-02-24T07:57:12.565Z"),
+                        "lastHeartbeatRecv" : ISODate("2017-02-24T07:57:10.743Z"
+),
+                        "pingMs" : NumberLong(0),
+                        "configVersion" : 5
+                }
+        ],
+        "ok" : 1
+}
+```
+可以看到在arbiter的调整下，端口40000的节点已经变成了secondary，而端口40001的节点已经变为primary，此时，插入一条记录，并重启端口40000的节点查看复制集状态信息：
+
+
+
+```
+rs0:PRIMARY> use cms
+switched to db cms
+rs0:PRIMARY> db.customers.insert({id:13,name:'wangwu'})
+WriteResult({ "nInserted" : 1 })
+rs0:PRIMARY> db.status()
+{
+        "set" : "rs0",
+        "date" : ISODate("2017-02-24T08:23:17.763Z"),
+        "myState" : 1,
+        "term" : NumberLong(3),
+        "heartbeatIntervalMillis" : NumberLong(2000),
+        "members" : [
+                {
+                        "_id" : 0,
+                        "name" : "linfl-PC:40000",
+                        "health" : 1,
+                        "state" : 2,
+                        "stateStr" : "SECONDARY",
+                        "uptime" : 1085,
+                        "optime" : {
+                                "ts" : Timestamp(1487923321, 1),
+                                "t" : NumberLong(3)
+                        },
+                        "optimeDate" : ISODate("2017-02-24T08:02:01Z"),
+                        "lastHeartbeat" : ISODate("2017-02-24T08:23:16.122Z"),
+                        "lastHeartbeatRecv" : ISODate("2017-02-24T08:23:16.122Z"
+),
+                        "pingMs" : NumberLong(0),
+                        "syncingTo" : "linfl-PC:40001",
+                        "configVersion" : 5
+                },
+                {
+                        "_id" : 1,
+                        "name" : "linfl-PC:40001",
+                        "health" : 1,
+                        "state" : 1,
+                        "stateStr" : "PRIMARY",
+                        "uptime" : 2013,
+                        "optime" : {
+                                "ts" : Timestamp(1487923321, 1),
+                                "t" : NumberLong(3)
+                        },
+                        "optimeDate" : ISODate("2017-02-24T08:02:01Z"),
+                        "electionTime" : Timestamp(1487923022, 1),
+                        "electionDate" : ISODate("2017-02-24T07:57:02Z"),
+                        "configVersion" : 5,
+                        "self" : true
+                },
+                {
+                        "_id" : 2,
+                        "name" : "linfl-PC:40002",
+                        "health" : 1,
+                        "state" : 7,
+                        "stateStr" : "ARBITER",
+                        "uptime" : 2010,
+                        "lastHeartbeat" : ISODate("2017-02-24T08:23:17.132Z"),
+                        "lastHeartbeatRecv" : ISODate("2017-02-24T08:23:15.847Z"
+),
+                        "pingMs" : NumberLong(0),
+                        "configVersion" : 5
+                }
+        ],
+        "ok" : 1
+}
+
+```
+此时，数据同步完成，复制集正常工作。
+
+
 
 
 ### 写关注
