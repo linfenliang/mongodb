@@ -31,8 +31,8 @@ secondary节点备份primary节点上的数据，secondary节点可以有多个�
 
 ```
 mongod --dbpath=D:\MongoDB\Server\3.2\data\rs0_0 --logpath=D:\MongoDB\Server\3.2\logs\rs0_0.log --port=40000 --replSet=rs0
-mongod --dbpath=D:\MongoDB\Server\3.2\data\rs0_1 --logpath=D:\MongoDB\Server\3.2\logs\rs0_1.log --port=40000 --replSet=rs0
-mongod --dbpath=D:\MongoDB\Server\3.2\data\rs0_2 --logpath=D:\MongoDB\Server\3.2\logs\rs0_2.log --port=40000 --replSet=rs0
+mongod --dbpath=D:\MongoDB\Server\3.2\data\rs0_1 --logpath=D:\MongoDB\Server\3.2\logs\rs0_1.log --port=40001 --replSet=rs0
+mongod --dbpath=D:\MongoDB\Server\3.2\data\rs0_2 --logpath=D:\MongoDB\Server\3.2\logs\rs0_2.log --port=40002 --replSet=rs0
 ```
 
 注意：需要创建data文件夹下的子文件夹为rs0\_0,rs0\_1,rs0\_2
@@ -275,7 +275,225 @@ local  0.000GB
 MongoDB自动故障转移是依靠心跳包实现的就是在前文提到的（lastHeartbeat）字段。Mongod每隔两秒向其他成员发送一个心跳包并且通过rs.status\(\)返回的成员的"headth"来判断成员状态，如果出现复制集中primary节点不可用，则复制集中所有的secondary节点会触发一次选举操作，选举出新的primary节点，arbiter只是负责选举其他成员成primary节点，自己不会参与到选举中。如果secondary节点有多个则会选择拥有最新时间戳的oplog记录或较高权限的节点称为primary。而如果secondary节点失败，则不会发生重新选举primary过程。  
 现在模拟两种情况下查看数据的处理过程，分别为secondary节点down，以及primary节点down
 
-secondary节点down：
+secondary节点down,查看故障转移情况：
+
+
+
+```
+rs0:PRIMARY> rs.status()
+{
+        "set" : "rs0",
+        "date" : ISODate("2017-02-24T07:39:17.573Z"),
+        "myState" : 1,
+        "term" : NumberLong(2),
+        "heartbeatIntervalMillis" : NumberLong(2000),
+        "members" : [
+                {
+                        "_id" : 0,
+                        "name" : "linfl-PC:40000",
+                        "health" : 1,
+                        "state" : 1,
+                        "stateStr" : "PRIMARY",
+                        "uptime" : 295,
+                        "optime" : {
+                                "ts" : Timestamp(1487921807, 1),
+                                "t" : NumberLong(2)
+                        },
+                        "optimeDate" : ISODate("2017-02-24T07:36:47Z"),
+                        "electionTime" : Timestamp(1487921806, 1),
+                        "electionDate" : ISODate("2017-02-24T07:36:46Z"),
+                        "configVersion" : 5,
+                        "self" : true
+                },
+                {
+                        "_id" : 1,
+                        "name" : "linfl-PC:40001",
+                        "health" : 0,
+                        "state" : 8,
+                        "stateStr" : "(not reachable/healthy)",
+                        "uptime" : 0,
+                        "optime" : {
+                                "ts" : Timestamp(0, 0),
+                                "t" : NumberLong(-1)
+                        },
+                        "optimeDate" : ISODate("1970-01-01T00:00:00Z"),
+                        "lastHeartbeat" : ISODate("2017-02-24T07:39:15.017Z"),
+                        "lastHeartbeatRecv" : ISODate("2017-02-24T07:38:33.501Z"
+),
+                        "pingMs" : NumberLong(0),
+                        "lastHeartbeatMessage" : "Couldn't get a connection with
+in the time limit",
+                        "configVersion" : -1
+                },
+                {
+                        "_id" : 2,
+                        "name" : "linfl-PC:40002",
+                        "health" : 1,
+                        "state" : 7,
+                        "stateStr" : "ARBITER",
+                        "uptime" : 156,
+                        "lastHeartbeat" : ISODate("2017-02-24T07:39:16.961Z"),
+                        "lastHeartbeatRecv" : ISODate("2017-02-24T07:39:15.647Z"
+),
+                        "pingMs" : NumberLong(0),
+                        "configVersion" : 5
+                }
+        ],
+        "ok" : 1
+}
+```
+可以看到 secondary节点state已经变为8（成员宕机状态了），同时，lastHeartbeatMessage显示：Couldn't get a connection within the time limit。
+
+往primary节点插入一条记录并查看状态信息：
+
+
+```
+rs0:PRIMARY> use cms
+switched to db cms
+rs0:PRIMARY> db.customers.insert({id:12,name:'zhangsan'})
+WriteResult({ "nInserted" : 1 })
+rs0:PRIMARY> rs.status()
+{
+        "set" : "rs0",
+        "date" : ISODate("2017-02-24T07:46:58.458Z"),
+        "myState" : 1,
+        "term" : NumberLong(2),
+        "heartbeatIntervalMillis" : NumberLong(2000),
+        "members" : [
+                {
+                        "_id" : 0,
+                        "name" : "linfl-PC:40000",
+                        "health" : 1,
+                        "state" : 1,
+                        "stateStr" : "PRIMARY",
+                        "uptime" : 756,
+                        "optime" : {
+                                "ts" : Timestamp(1487922414, 1),
+                                "t" : NumberLong(2)
+                        },
+                        "optimeDate" : ISODate("2017-02-24T07:46:54Z"),
+                        "electionTime" : Timestamp(1487921806, 1),
+                        "electionDate" : ISODate("2017-02-24T07:36:46Z"),
+                        "configVersion" : 5,
+                        "self" : true
+                },
+                {
+                        "_id" : 1,
+                        "name" : "linfl-PC:40001",
+                        "health" : 0,
+                        "state" : 8,
+                        "stateStr" : "(not reachable/healthy)",
+                        "uptime" : 0,
+                        "optime" : {
+                                "ts" : Timestamp(0, 0),
+                                "t" : NumberLong(-1)
+                        },
+                        "optimeDate" : ISODate("1970-01-01T00:00:00Z"),
+                        "lastHeartbeat" : ISODate("2017-02-24T07:46:57.445Z"),
+                        "lastHeartbeatRecv" : ISODate("2017-02-24T07:38:33.501Z"
+),
+                        "pingMs" : NumberLong(0),
+                        "lastHeartbeatMessage" : "����Ŀ�����������ܾ����޷����ӡ�",
+
+                        "configVersion" : -1
+                },
+                {
+                        "_id" : 2,
+                        "name" : "linfl-PC:40002",
+                        "health" : 1,
+                        "state" : 7,
+                        "stateStr" : "ARBITER",
+                        "uptime" : 617,
+                        "lastHeartbeat" : ISODate("2017-02-24T07:46:57.005Z"),
+                        "lastHeartbeatRecv" : ISODate("2017-02-24T07:46:55.655Z"
+),
+                        "pingMs" : NumberLong(0),
+                        "configVersion" : 5
+                }
+        ],
+        "ok" : 1
+}
+rs0:PRIMARY>
+
+
+
+
+
+
+
+
+```
+
+检查optime信息发现已经发生了变化，重新启动secondary节点：
+并再次查看：
+
+
+
+```
+rs0:PRIMARY> rs.status()
+{
+        "set" : "rs0",
+        "date" : ISODate("2017-02-24T07:49:51.633Z"),
+        "myState" : 1,
+        "term" : NumberLong(2),
+        "heartbeatIntervalMillis" : NumberLong(2000),
+        "members" : [
+                {
+                        "_id" : 0,
+                        "name" : "linfl-PC:40000",
+                        "health" : 1,
+                        "state" : 1,
+                        "stateStr" : "PRIMARY",
+                        "uptime" : 929,
+                        "optime" : {
+                                "ts" : Timestamp(1487922414, 1),
+                                "t" : NumberLong(2)
+                        },
+                        "optimeDate" : ISODate("2017-02-24T07:46:54Z"),
+                        "electionTime" : Timestamp(1487921806, 1),
+                        "electionDate" : ISODate("2017-02-24T07:36:46Z"),
+                        "configVersion" : 5,
+                        "self" : true
+                },
+                {
+                        "_id" : 1,
+                        "name" : "linfl-PC:40001",
+                        "health" : 1,
+                        "state" : 2,
+                        "stateStr" : "SECONDARY",
+                        "uptime" : 6,
+                        "optime" : {
+                                "ts" : Timestamp(1487921807, 1),
+                                "t" : NumberLong(2)
+                        },
+                        "optimeDate" : ISODate("2017-02-24T07:36:47Z"),
+                        "lastHeartbeat" : ISODate("2017-02-24T07:49:51.570Z"),
+                        "lastHeartbeatRecv" : ISODate("2017-02-24T07:49:47.386Z"
+),
+                        "pingMs" : NumberLong(0),
+                        "configVersion" : 5
+                },
+                {
+                        "_id" : 2,
+                        "name" : "linfl-PC:40002",
+                        "health" : 1,
+                        "state" : 7,
+                        "stateStr" : "ARBITER",
+                        "uptime" : 790,
+                        "lastHeartbeat" : ISODate("2017-02-24T07:49:51.016Z"),
+                        "lastHeartbeatRecv" : ISODate("2017-02-24T07:49:50.656Z"
+),
+                        "pingMs" : NumberLong(0),
+                        "configVersion" : 5
+                }
+        ],
+        "ok" : 1
+}
+```
+
+可以看到primary与secondary节点 optime 中t已经相同了（注意：由于误操作，刚才插入了两条记录）。
+
+
 
 ### 写关注
 
