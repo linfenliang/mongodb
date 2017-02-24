@@ -16,7 +16,7 @@ secondary节点备份primary节点上的数据，secondary节点可以有多个�
 
 现在除了primary，secondary节点外，可以新增一个mongod实例副本集作为arbiter，arbiter不能维护数据集。arbiter的主要作用是维持与复制集中所有的其他节点的心跳以保证选举需要的节点数，因为arbiter不是一个数据存储集，arbiter可以提供一个比全功能副本集更廉价的方法来获取法定人数。如果复制集中是偶数个节点，可以通过添加arbiter节点使得primary可以获取到大多数的投票。arbiter不需要专门的硬件支持。arbiter的作用如下：
 
-![](https://docs.mongodb.com/manual/_images/replica-set-primary-with-secondary-and-arbiter.png)
+![](https://docs.mongodb.com/manual/_images/replica-set-primary-with-secondary-and-arbiter.bakedsvg.svg)
 
 相对于primary与secondary节点可能在一次选举中（主节点失效触发）互换角色，arbiter仲裁者永远都是arbiter。
 
