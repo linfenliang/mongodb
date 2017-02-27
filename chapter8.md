@@ -16,3 +16,7 @@
 ### 集群的写、读
 
 ### 片键选择策略
+
+## 参考链接
+
+[](https://docs.mongodb.com/manual/core/sharded-cluster-components/)
