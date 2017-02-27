@@ -33,6 +33,12 @@ mongod --dbpath=D:\MongoDB\Server\3.2\data\rs0_2 --logpath=D:\MongoDB\Server\3.2
 
 
 
+```
+mongod --dbpath=D:\MongoDB\Server\3.2\data\db_config --logpath=D:\MongoDB\Server\3.2\logs\dbconfig.log --port=40003 --configsvr
+```
+
+
+
 
 ## 分片工作机制
 
