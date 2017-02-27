@@ -36,6 +36,59 @@ mongod --dbpath=D:\MongoDB\Server\3.2\data\rs0_2 --logpath=D:\MongoDB\Server\3.2
 ```
 mongod --dbpath=D:\MongoDB\Server\3.2\data\db_config --logpath=D:\MongoDB\Server\3.2\logs\dbconfig.log --port=40003 --configsvr
 ```
+路由服务器启动
+
+
+
+```
+mongos --logpath=D:\MongoDB\Server\3.2\logs\dbrouter.log --port=40004 --configdb=linfl-PC:40003
+```
+添加分片信息到集群：
+
+
+
+```
+mongo --port 40004
+mongos> use admin
+switched to db admin
+mongos> sh.addShard("rs0/linfl-PC:40000,linfl-PC:40001")
+{
+        "ok" : 0,
+        "errmsg" : "can't add shard 'rs0/linfl-PC:40000,linfl-PC:40001' because a local database 'config' exists in another config",
+        "code" : 96
+}
+```
+
+报错了，原来的rs0由于已经存在config数据库了，去把他删掉：
+
+
+
+```
+D:\MongoDB\Server\3.2\bin>mongo --port 40000
+2017-02-27T16:14:51.454+0800 I CONTROL  [main] Hotfix KB2731284 or later update
+is not installed, will zero-out data files
+MongoDB shell version: 3.2.9
+connecting to: 127.0.0.1:40000/test
+rs0:PRIMARY> show dbs
+cms     0.000GB
+config  0.000GB
+local   0.000GB
+test    0.000GB
+rs0:PRIMARY> use config
+switched to db config
+rs0:PRIMARY> db.dropDatabase()
+{ "dropped" : "config", "ok" : 1 }
+```
+然后重新连接到4004执行添加分片即可，看下状态：
+
+
+
+```
+
+```
+
+
+
 
 
 
