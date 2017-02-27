@@ -9,14 +9,29 @@
 ![](https://docs.mongodb.com/manual/_images/sharded-cluster-production-architecture.bakedsvg.svg)
 
 先做一些解释：
-1.shared片：一般为一台单独的服务器，即为一个数据存储节点，这个存储节点需要做复制集，实现高可用以及自动故障转移，一般一个分片集群有多个shared片；
-2. config服务器：主要是记录shared的配置信息（元信息metadata），如数据存储目录，日志目录，端口号，是否开启了journal等信息，为了保证config服务器的可用性，也做了复制集处理，注意，一旦配置服务器无法使用，则整个集群就不能使用了，**一般是独立的三台服务器实现**冗余备份，这三台可能每一台是独立的复制集架构。
-3.Mongos路由进程（Router）：应用程序通过驱动程序直接连接router，router启动时从配置服务器复制集中读取shared信息，然后将数据实际写入或读取（路由）到具体的shared中。
+1.shard片：一般为一台单独的服务器，即为一个数据存储节点，这个存储节点需要做复制集，实现高可用以及自动故障转移，一般一个分片集群有多个shard片；
+2. config服务器：主要是记录shard的配置信息（元信息metadata），如数据存储目录，日志目录，端口号，是否开启了journal等信息，为了保证config服务器的可用性，也做了复制集处理，注意，一旦配置服务器无法使用，则整个集群就不能使用了，**一般是独立的三台服务器实现**冗余备份，这三台可能每一台是独立的复制集架构。
+3.Mongos路由进程（Router）：应用程序通过驱动程序直接连接router，router启动时从配置服务器复制集中读取shared信息，然后将数据实际写入或读取（路由）到具体的shard中。
 
 ### 部署配置
 
 注意：此处由于我这边只有一台服务器（PC机），所以这里实现的是一个伪集群，部署架构如图所示：
 ![](https://docs.mongodb.com/manual/_images/sharded-cluster-test-architecture.bakedsvg.svg)
+
+一个Shard（复制集模式），一个config进程，一个router进程，均在同一台服务器上面
+
+沿用上一节的复制集作为shard，
+
+启动：
+
+```
+mongod --dbpath=D:\MongoDB\Server\3.2\data\rs0_0 --logpath=D:\MongoDB\Server\3.2\logs\rs0_0.log --port=40000 --replSet=rs0
+mongod --dbpath=D:\MongoDB\Server\3.2\data\rs0_1 --logpath=D:\MongoDB\Server\3.2\logs\rs0_1.log --port=40001 --replSet=rs0
+mongod --dbpath=D:\MongoDB\Server\3.2\data\rs0_2 --logpath=D:\MongoDB\Server\3.2\logs\rs0_2.log --port=40002 --replSet=rs0
+```
+配置服务器启动：
+
+
 
 
 ## 分片工作机制
