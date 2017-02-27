@@ -84,8 +84,60 @@ rs0:PRIMARY> db.dropDatabase()
 
 
 ```
+D:\MongoDB\Server\3.2\bin>mongo --port 40004
+2017-02-27T16:15:17.286+0800 I CONTROL  [main] Hotfix KB2731284 or later update
+is not installed, will zero-out data files
+MongoDB shell version: 3.2.9
+connecting to: 127.0.0.1:40004/test
+mongos> sh.addShard("rs0/linfl-PC:40000,linfl-PC:40001")
+{ "shardAdded" : "rs0", "ok" : 1 }
+mongos> sh.status()
+--- Sharding Status ---
+  sharding version: {
+        "_id" : 1,
+        "minCompatibleVersion" : 5,
+        "currentVersion" : 6,
+        "clusterId" : ObjectId("58b3d9df84493cb599359c8b")
+}
+  shards:
+        {  "_id" : "rs0",  "host" : "rs0/linfl-PC:40000,linfl-PC:40001" }
+  active mongoses:
+        "3.2.9" : 1
+  balancer:
+        Currently enabled:  yes
+        Currently running:  no
+        Failed balancer rounds in last 5 attempts:  5
+        Last reported error:  remote client 192.168.56.1:51845 tried to initiali
+ze this host as shard rs0, but shard name was previously initialized as config
+        Time of Reported error:  Mon Feb 27 2017 16:15:48 GMT+0800
+        Migration Results for the last 24 hours:
+                No recent migrations
+  databases:
+        {  "_id" : "cms",  "primary" : "rs0",  "partitioned" : false }
+        {  "_id" : "test",  "primary" : "rs0",  "partitioned" : false }
 
 ```
+对config数据库中的各个集合做如下解释：
+
+
+
+```
+mongos> use config
+switched to db config
+mongos> show collections
+actionlog //
+changelog //保存被分片的集合的任何元数据的改变信息，如chunks的迁移，分割等
+chunks //集群中所有的块信息，块的数据范围以及块所在的片
+databases //集群中所有的数据库
+lockpings //追踪集群中的激活组件
+locks//均衡器产生的锁信息
+mongos//所有路由信息
+settings//分片集群的配置信息，如chunk大小，均衡器状态等
+shards//集群中所有的片信息
+tags
+version//元信息版本
+```
+
 
 
 
