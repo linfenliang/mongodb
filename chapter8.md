@@ -158,4 +158,4 @@ version//元信息版本
 
 ## 参考链接
 
-[](https://docs.mongodb.com/manual/core/sharded-cluster-components/)
+![](https://docs.mongodb.com/manual/core/sharded-cluster-components/)
