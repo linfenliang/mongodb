@@ -161,7 +161,28 @@ MongoDB的分片是基于返回的，即任何一个文档一定位于指定片�
 
 | 开始键值 | 结束键值 |所在分片|
 | :---: | :--- |:---|
-| select | 查询选择器实现 |qqq|
+| -∞| beijing |rs0|
+| beijing| changsha|rs1|
+| changsha| guangzhou|rs0|
+| guangzhou| ∞|rs1|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
