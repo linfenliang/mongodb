@@ -240,7 +240,11 @@ sh.shardCollection("cms.users",{city:1})
 
 ### 集群的写、读
 
+
+
 ### 片键选择策略
+
+
 
 ## 参考链接
 
