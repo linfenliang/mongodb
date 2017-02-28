@@ -198,10 +198,18 @@ sh.enableSharding('cms')
 db.user.ensureIndex({city:1})
 sh.shardCollection("cms.users",{city:1})
 ```
-注意：由于我本地是单台PC，做分片后看不到效果。
+注意：由于我本地是单台PC，做分片后看不到效果，但如果有两个分片，分别为rs0,与rs1，往users中插入数据，最后的结果会是
 
 
+![](/assets/Image.png)
 
+通过
+
+
+```
+ db.changelog.find()
+```
+可以看到具体的块分割过程，当存储的chunk小于64MB时，不分割，当大于64MB时，开始分割成两部分，-∞~beijing,beijing~∞,随着数据的进一步增大，beijing~∞被继续分割成beijing~guangzhou,guangzhou~∞，这样，rs0就有三个chunk了，随后，-∞到beijing的chunk开始发生转移，从rs0迁移到rs1上面去，依次类推，MongDB就是这样实现了海量数据的分布式存储的。
 
 
 
@@ -218,6 +226,7 @@ sh.shardCollection("cms.users",{city:1})
 
 
 ### 集群平衡器
+
 
 ### 集群的写、读
 
