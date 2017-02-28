@@ -192,8 +192,14 @@ sh.enableSharding('cms')
 
 在已存在的集合中分片
 先创建索引：
+
+
+```
 db.user.ensureIndex({city:1})
 sh.shardCollection("cms.users",{city:1})
+```
+
+
 
 
 
