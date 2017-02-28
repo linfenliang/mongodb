@@ -173,10 +173,7 @@ MongoDB的分片是基于返回的，即任何一个文档一定位于指定片�
 
 
 ```
-mongos> use cms
-switched to db cms
-mongos> **sh.enableSharding('cms')**
-{ "ok" : 1 }
+sh.enableSharding('cms')
 
 ```
 
