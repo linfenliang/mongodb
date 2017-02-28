@@ -177,9 +177,23 @@ sh.enableSharding('cms')
 
 ```
 
+对于已有的集合如果要分片，那么选定片键后，需要在片键上面首先创建索引，如果集合初始状态为空，则自动创建索引
+查看rs.status()可以看到，如下信息片段：
 
 
+```
+ databases:
+       {  "_id" : "cms",  "primary" : "rs0",  "partitioned" : true }
+       {  "_id" : "test",  "primary" : "rs0",  "partitioned" : false }
 
+```
+证明 cms已经支持分片
+
+
+在已存在的集合中分片
+先创建索引：
+db.user.ensureIndex({city:1})
+sh.shardCollection("cms.users",{city:1})
 
 
 
