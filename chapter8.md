@@ -172,8 +172,10 @@ MongoDB的分片是基于返回的，即任何一个文档一定位于指定片�
 使集合支持分片，必须先使数据库支持分片：
 
 
-```
-sh.enableSharding('cms')
+```mongos> use cms
+switched to db cms
+mongos> **sh.enableSharding('cms')**
+{ "ok" : 1 }
 ```
 
 
