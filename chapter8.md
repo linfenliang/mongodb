@@ -231,6 +231,7 @@ sh.shardCollection("cms.users",{city:1})
 
 当一个被分片的集合的所有chunk在集群中分布不均衡时（如200个chunk在rs0,50个在rs1上），平衡器就会将chunk从最多的片上迁移到最少的片上，直到chunk数量基本相等为止。平衡器会根据chunk数量的不同，有不同的规则触发块迁移，默认配置为chunk<20，阈值为2，20<chunk<79阈值为4，chunk>80，阈值为8，这也就是为什么我们在刚才要在chunk为3时才能看到迁移过程的变化。
 基本的chunk迁移流程如下所示：
+![![](/assets/Image2.png)](/assets/Image2.png)
 
 
 
