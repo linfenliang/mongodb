@@ -198,7 +198,7 @@ sh.enableSharding('cms')
 db.user.ensureIndex({city:1})
 sh.shardCollection("cms.users",{city:1})
 ```
-
+注意：由于我本地是单台PC，做分片后看不到效果。
 
 
 
