@@ -197,6 +197,13 @@ sh.startBalancer()
 
 ```
 
+集群数据恢复流程：
+
+1. 停止集群中所有的mongod实例以及mongos实例
+2. 利用dump文件依次回复每一个片中的每个复制集
+3. 恢复配置服务器
+4. 重启所有mongod实例以及Mongos实例
+5. 通过mongo连接Mongos，执行命令 db.printShardingStatus()确保集群可用
 
 
 
