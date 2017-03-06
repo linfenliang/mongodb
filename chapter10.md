@@ -90,7 +90,7 @@ D:\MongoDB\Server\3.2\bin>mongoimport.exe --db test --collection user --file E:\
 
 导入csv文件时，格式基本一致，但是需要指定一个参数：--headerline，此参数表示文件的第一行为字段名，不导入。
 
-MongoDB的这两个工具，适合用来将关系型数据库中的数据与MongoDB数据做互相转换，并不适合读数据库圈梁备份。
+MongoDB的这两个工具，适合用来将关系型数据库中的数据与MongoDB数据做互相转换，并不适合读数据库全量备份。
 
 
 
