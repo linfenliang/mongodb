@@ -655,12 +655,13 @@ rs0:PRIMARY> db.status()
 
 读参考是指将客户端读请求路由到复制集中的指定成员上，如secondary，默认情况下读操作被路由到primary节点，从primary节点读取数据可以保证数据是最新的，从secondary节点读取到的数据有可能不是最新的，对实时性要求不高的应用程序来讲，并不是不可接受（够用）
 读参考并不能提高系统的读写容量，但是能够将客户端的读请求路由到最佳secondary节点（如华南地区请求华南secondary），提高客户端的读效率
-读参考的几种模式：
+读参考的几种模式：
 1.primary模式：读请求全部集中到primary节点，primary节点挂了，读操作产生错误或异常
 2.primarypreferred模式：大多数情况下读请求路由到primary节点，如果primary节点故障，读操作被路由到secondary节点
 3.secondary模式：读请求全部集中到secondary节点，如果一个secondary节点都没有或不可用，读操作产生错误或异常
 4.secondarypreferred模式：读操作在secondary节点，当复制集中只有一个primary节点时，读操作将使用该节点
 5.nearest模式：读操作从最近节点进行，不管primary或secondary节点
+
 
 ## 参考
 
