@@ -93,7 +93,33 @@ E:\synch.rar    24183487
 Type "it" for more
 ```
 
-可以看到大文件被分成了好多个chunk，
+可以看到大文件被分成了好多个chunk，那么为什么上传16MB以上的文件也会成功呢，因为我们采用的就是GridFS系统存储的文件，因为我们采用的是mongfiles方式上传的文件。
+
+下面分别是查询、下载、删除操作：
+
+
+
+```
+D:\MongoDB\Server\3.2\bin>mongofiles.exe search rar
+2017-03-06T14:45:31.974+0800    connected to: localhost
+E:\synch.rar    24183487
+
+D:\MongoDB\Server\3.2\bin>mongofiles.exe --local D:\mongodb_download.rar get E:\synch.rar
+2017-03-06T14:47:17.841+0800    connected to: localhost
+finished writing to D:\mongodb_download.rar
+
+D:\MongoDB\Server\3.2\bin>mongofiles.exe delete E:\synch.rar
+2017-03-06T14:47:56.649+0800    connected to: localhost
+successfully deleted all instances of 'E:\synch.rar' from GridFS
+
+D:\MongoDB\Server\3.2\bin>mongofiles.exe list
+2017-03-06T14:48:03.886+0800    connected to: localhost
+E:\deliveryTask.doc     2971
+```
+
+
+
+
 
 
 
