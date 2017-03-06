@@ -103,10 +103,84 @@ MongoDB的这两个工具，适合用来将关系型数据库中的数据与Mong
 
 
 
-
 ### 单节点dump备份与恢复
 
+备份命令：
+
+
+
+```
+D:\MongoDB\Server\3.2\bin>mongodump.exe --db test --out E:\test_bak
+2017-03-06T18:20:05.565+0800    writing test.restaurants to
+2017-03-06T18:20:05.577+0800    writing test.user to
+2017-03-06T18:20:05.578+0800    writing test.fs.chunks to
+2017-03-06T18:20:05.579+0800    writing test.fs.files to
+2017-03-06T18:20:05.580+0800    done dumping test.restaurants (2 documents)
+2017-03-06T18:20:05.581+0800    done dumping test.user (2 documents)
+2017-03-06T18:20:05.582+0800    done dumping test.fs.chunks (1 document)
+2017-03-06T18:20:05.582+0800    done dumping test.fs.files (1 document)
+```
+这是生成后的文件信息：
+
+![](/assets/dump_image.png)
+
+常用的命令参数还有：
+
+--collection 指定具体的集合
+--query 按照查询条件备份
+
+恢复命令：
+
+
+
+```
+D:\MongoDB\Server\3.2\bin>mongorestore.exe --db user_restore E:\test_bak\test
+2017-03-06T18:43:04.835+0800    building a list of collections to restore from E:\test_bak\test dir
+2017-03-06T18:43:04.849+0800    reading metadata for user_restore.fs.chunks from E:\test_bak\test\fs.chunks.metadata.json
+2017-03-06T18:43:04.960+0800    restoring user_restore.fs.chunks from E:\test_bak\test\fs.chunks.bson
+2017-03-06T18:43:04.961+0800    reading metadata for user_restore.restaurants from E:\test_bak\test\restaurants.metadata.json
+2017-03-06T18:43:04.967+0800    reading metadata for user_restore.fs.files from E:\test_bak\test\fs.files.metadata.json
+2017-03-06T18:43:04.969+0800    reading metadata for user_restore.user from E:\test_bak\test\user.metadata.json
+2017-03-06T18:43:05.019+0800    restoring user_restore.restaurants from E:\test_bak\test\restaurants.bson
+2017-03-06T18:43:05.021+0800    restoring indexes for collection user_restore.fs.chunks from metadata
+2017-03-06T18:43:05.082+0800    restoring user_restore.fs.files from E:\test_bak\test\fs.files.bson
+2017-03-06T18:43:05.133+0800    restoring user_restore.user from E:\test_bak\test\user.bson
+2017-03-06T18:43:05.135+0800    restoring indexes for collection user_restore.restaurants from metadata
+2017-03-06T18:43:05.171+0800    finished restoring user_restore.restaurants (2 documents)
+2017-03-06T18:43:05.172+0800    restoring indexes for collection user_restore.fs.files from metadata
+2017-03-06T18:43:05.174+0800    restoring indexes for collection user_restore.user from metadata
+2017-03-06T18:43:05.175+0800    finished restoring user_restore.fs.chunks (1 document)
+2017-03-06T18:43:05.177+0800    finished restoring user_restore.fs.files (1 document)
+2017-03-06T18:43:05.178+0800    finished restoring user_restore.user (2 documents)
+2017-03-06T18:43:05.180+0800    done
+```
+
+查看恢复情况：
+
+
+
+```
+> use user_restore
+switched to db user_restore
+> show collections
+> show collections
+fs.chunks
+fs.files
+restaurants
+user
+```
+常用的命令参数还有：
+
+--collection 指定具体的集合
+--drop 恢复数据前删除此数据库下的所有集合
+
+
+
+
+
 ### 集群dump备份与恢复
+
+
 
 ## 监控
 
