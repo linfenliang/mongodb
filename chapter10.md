@@ -213,7 +213,137 @@ sh.startBalancer()
 ## 监控
 
 ### 数据库监控命令
+1. mongostat命令：
+
+
+```
+D:\MongoDB\Server\3.2\bin>mongostat.exe
+insert query update delete getmore command % dirty % used flushes vsize   res qr|qw ar|aw netIn netOut conn                      time
+    *0    *0     *0     *0       0     1|0     0.0    0.0       0  169M 45.0M   0|0   0|0   79b  19.3k    1 2017-03-07T15:59:29+08:00
+    *0    *0     *0     *0       0     1|0     0.0    0.0       0  169M 45.0M   0|0   0|0   79b  19.3k    1 2017-03-07T15:59:30+08:00
+    *0    *0     *0     *0       0     1|0     0.0    0.0       0  169M 45.0M   0|0   0|0   79b  19.3k    1 2017-03-07T15:59:31+08:00
+    *0    *0     *0     *0       0     1|0     0.0    0.0       0  169M 45.0M   0|0   0|0   79b  19.3k    1 2017-03-07T15:59:32+08:00
+    *0    *0     *0     *0       0     1|0     0.0    0.0       0  169M 45.0M   0|0   0|0   79b  19.3k    1 2017-03-07T15:59:33+08:00
+    *0    *0     *0     *0       0     1|0     0.0    0.0       0  169M 45.0M   0|0   0|0   79b  19.3k    1 2017-03-07T15:59:34+08:00
+```
+
+上面这个命令一看就懂，基本不需要多说。
+2. 另一个命令：mongotop
+
+
+
+```
+D:\MongoDB\Server\3.2\bin>mongotop.exe
+2017-03-07T16:01:04.063+0800    connected to: 127.0.0.1
+
+                    ns    total    read    write    2017-03-07T16:01:05+08:00
+    admin.system.roles      0ms     0ms      0ms
+  admin.system.version      0ms     0ms      0ms
+     local.startup_log      0ms     0ms      0ms
+  local.system.replset      0ms     0ms      0ms
+        test.fs.chunks      0ms     0ms      0ms
+         test.fs.files      0ms     0ms      0ms
+      test.restaurants      0ms     0ms      0ms
+             test.user      0ms     0ms      0ms
+user_restore.fs.chunks      0ms     0ms      0ms
+ user_restore.fs.files      0ms     0ms      0ms
+```
+
+3. serverStatus命令：
+
+
+
+```
+D:\MongoDB\Server\3.2\bin>mongo.exe
+2017-03-07T16:02:49.399+0800 I CONTROL  [main] Hotfix KB2731284 or later update is not installed, will zero-out data files
+MongoDB shell version: 3.2.9
+connecting to: test
+> db.serverStatus()
+```
+
+信息量打印太多，不再贴出来了。
+4. stats命令：
+
+
+
+```
+D:\MongoDB\Server\3.2\bin>mongo.exe
+2017-03-07T16:02:49.399+0800 I CONTROL  [main] Hotfix KB2731284 or later update is not installed, will zero-out data files
+MongoDB shell version: 3.2.9
+connecting to: test
+> db.stats()
+{
+        "db" : "test",
+        "collections" : 4,
+        "objects" : 6,
+        "avgObjSize" : 663.6666666666666,
+        "dataSize" : 3982,
+        "storageSize" : 14036992,
+        "numExtents" : 0,
+        "indexes" : 5,
+        "indexSize" : 176128,
+        "ok" : 1
+}
+```
+影响数据库性能的几个主要参数：
+
+锁，可以通过serverStatus中globalLock数据查看currentQueue中的total值，该值反应了是否存在并发问题严重程度
+
+内存，可通过serverStatus查看
+
+
+```
+"mem" : { "bits" : 64,
+    "resident" : 45,
+    "virtual" : 169,
+    "supported" : true,
+    "mapped" : 0,
+    "mappedWithJournal" : 0 },
+```
+
+注意 mapped如果过大，会引起缺页错误，resident过大，表示系统内存过小
+
+缺页错误，page_faults
+
+
+
+```
+"extra_info" : { "note" : "fields vary by platform",
+    "page_faults" : 51143,
+    "usagePageFileMB" : 72,
+    "totalPageFileMB" : 16133,
+    "availPageFileMB" : 10188,
+    "ramMB" : 8067 },
+```
+
+这个会导致大量的内存置换，解决的办法是部署分片集群
+
+连接数，activeClients 表示连接数，
+
+
+```
+ "globalLock" : { "totalTime" : { "$numberLong" : "1561525000" },
+    "currentQueue" : { "total" : 0,
+      "readers" : 0,
+      "writers" : 0 },
+    "activeClients" : { "total" : 9,
+      "readers" : 0,
+      "writers" : 0 } },
+```
+对于读操作大的应用，可以增加复制集成员数，将读操作分发到secondary节点上，对写操作大的应用，通过部署分片集群分发写操作。
+
+
 
 ### 操作系统监控命令
 
+top
+free
+iostat
+
+基本的常用命令，非mongod独有，不再赘述。
+
+
 ### WEB控制台监控
+
+启动mongod时，添加参数：>mongod --httpinterface --rest
+前一个参数表示打开Web控制台，后一个参数能够获取更为详细的数据，不建议在生产环境打开。
