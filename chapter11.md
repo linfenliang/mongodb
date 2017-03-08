@@ -110,6 +110,10 @@ switched to db admin
 > use user_restore
 
 ```
+单个数据库的授权，除了dbOwner以外，还有如下常用角色：
+
+dbAdmin
+userAdmin
 
 
 
