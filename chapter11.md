@@ -68,7 +68,12 @@ system.version
 ```
 
 
+role中root是权限最大的橘色，还有一些其他角色，可供参考：
 
+readAnyDatabase
+readWriteAnyDatabase
+userAdminAnyDatabase 针对所有数据库的用户管理权限
+dbAdminAnyDatabase 针对所有数据库的管理权限
 
 
 
