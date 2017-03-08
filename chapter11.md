@@ -53,6 +53,20 @@ local         0.000GB
 test          0.013GB
 user_restore  0.000GB
 ```
+查看admin下的system.users可以看到用户信息：
+
+
+
+```
+> use admin
+switched to db admin
+> show collections
+system.users
+system.version
+> db.system.users.find()
+{ "_id" : "test.linfenliang", "user" : "linfenliang", "db" : "test", "credentials" : { "SCRAM-SHA-1" : { "iterationCount" : 10000, "salt" : "K65ZgJZS9hUtULJHAZ7vcg==", "storedKey": "pkki81sYP0tvuO4F6YcXTQCm3es=", "serverKey" : "/7y0nALEIU9PSeXNhXTVjmkAiLA=" } }, "roles" : [ { "role" : "root", "db" : "admin" } ] }
+```
+
 
 
 
