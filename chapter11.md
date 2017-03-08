@@ -80,5 +80,39 @@ dbAdminAnyDatabase 针对所有数据库的管理权限
 
 ### 单个数据库的角色控制
 
+主要是role改成了 dbOwner，
+
+命令如下所示：
+
+
+
+```
+> db.createUser({user:'lin',pwd:'123',roles:[{role:'dbOwner',db:'user_restore'}]})
+Successfully added user: {
+        "user" : "lin",
+        "roles" : [
+                {
+                        "role" : "dbOwner",
+                        "db" : "user_restore"
+                }
+        ]
+}
+```
+然后在admin库中授权，然后切换到user_restore即可：
+
+
+
+```
+> use admin
+switched to db admin
+> db.auth('lin','123')
+1
+> use user_restore
+
+```
+
+
+
+
 
 ## 复制集与集群的权限控制
